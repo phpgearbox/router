@@ -1,0 +1,18 @@
+{
+	"name": "gears/router",
+	"description": "Laravel Router Standalone",
+	"homepage": "https://github.com/phpgearbox/blade",
+	"keywords": ["laravel", "router", "standalone"],
+	"license": "MIT",
+	"require":
+	{
+		"illuminate/routing": "*"
+	},
+	"autoload":
+	{
+		"psr-4":
+		{
+			"Gears\\": ""
+		}
+	}
+}
