@@ -42,9 +42,9 @@ class Router
 	 * -------------------------------------------------------------------------
 	 * $path - A file path to a route file or directory.
 	 *
-	 * $notFound - If this is set we will use this as the 404 response. By
-	 * default we assume you will be using the 'Gears\Blade\View' component.
-	 * And check for a 404 view using View::exists.
+	 * $notFound - If this is set we will use this as the 404 response.
+	 * If nothing is supplied we output a nice looking default 404 page.
+	 * Credits: http://html5boilerplate.com/
 	 * 
 	 * $exitOnComplete - When set to true (the default) we will exit the current
 	 * PHP process after sending the response. This ensures that no other output
@@ -95,61 +95,42 @@ class Router
 		}
 		catch (NotFoundHttpException $e)
 		{
-			// Do we have some custom 404 content?
+			// Output our 404 page
 			if (!empty($notFound))
 			{
-				echo $notFound; return;
+				echo $notFound;
 			}
-
-			// Do we have a global view class
-			if (class_exists('\View'))
+			else
 			{
-				if (\View::exists('404'))
-				{
-					echo \View::make('404'); return;
-				}
+				echo
+				'
+					<!doctype html>
+					<html lang="en">
+						<head>
+							<meta charset="utf-8">
+							<title>Page Not Found</title>
+							<meta name="viewport" content="width=device-width, initial-scale=1">
+							<style>
+								* { line-height: 1.2; margin: 0; }
+								html { color: #888; display: table; font-family: sans-serif; height: 100%; text-align: center; width: 100%; }
+								body { display: table-cell; vertical-align: middle; margin: 2em auto; }
+								h1 { color: #555; font-size: 2em; font-weight: 400; }
+								p { margin: 0 auto; width: 280px; }
+								@media only screen and (max-width: 280px)
+								{
+									body, p { width: 95%; }
+									h1 { font-size: 1.5em; margin: 0 0 0.3em 0; }
+								}
+							</style>
+						</head>
+						<body>
+							<h1>Page Not Found</h1>
+							<p>Sorry, but the page you were trying to view does not exist.</p>
+						</body>
+					</html>
+					<!-- IE needs 512+ bytes: http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx -->
+				';
 			}
-
-			// What about a Gears\View class
-			if(class_exists('\Gears\View'))
-			{
-				if (\Gears\View::exists('404'))
-				{
-					echo \Gears\View::make('404'); return;
-				}
-			}
-
-			// Oh bugger we don't have a 404 view
-			// We will just show something generic but nice instead
-			// This is the default 404 that comes with html5 boilerplate
-			echo
-			'
-				<!doctype html>
-				<html lang="en">
-					<head>
-						<meta charset="utf-8">
-						<title>Page Not Found</title>
-						<meta name="viewport" content="width=device-width, initial-scale=1">
-						<style>
-							* { line-height: 1.2; margin: 0; }
-							html { color: #888; display: table; font-family: sans-serif; height: 100%; text-align: center; width: 100%; }
-							body { display: table-cell; vertical-align: middle; margin: 2em auto; }
-							h1 { color: #555; font-size: 2em; font-weight: 400; }
-							p { margin: 0 auto; width: 280px; }
-							@media only screen and (max-width: 280px)
-							{
-								body, p { width: 95%; }
-								h1 { font-size: 1.5em; margin: 0 0 0.3em 0; }
-							}
-						</style>
-					</head>
-					<body>
-						<h1>Page Not Found</h1>
-						<p>Sorry, but the page you were trying to view does not exist.</p>
-					</body>
-				</html>
-				<!-- IE needs 512+ bytes: http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx -->
-			';
 		}
 
 		// We are all done now
