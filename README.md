@@ -83,7 +83,7 @@ Gears\Router::install('/file/path/to/my/routes', 'Custom 404 HTML', false);
 More info
 --------------------------------------------------------------------------------
 For more configuration options see the class comments at:
-https://github.com/phpgearbox/session/blob/master/Router.php
+https://github.com/phpgearbox/router/blob/master/Router.php
 
 So now for the why?
 --------------------------------------------------------------------------------
