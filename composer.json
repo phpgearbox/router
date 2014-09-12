@@ -6,7 +6,8 @@
 	"license": "MIT",
 	"require":
 	{
-		"illuminate/routing": "*"
+		"illuminate/routing": "*",
+		"illuminate/events": "*"
 	},
 	"autoload":
 	{
