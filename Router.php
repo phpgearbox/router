@@ -46,6 +46,9 @@ class Router
 	 * If nothing is supplied we output a nice looking default 404 page.
 	 * Credits: http://html5boilerplate.com/
 	 * 
+	 * **NEW FEATURE:** If the value for notFound is explicitly set to a
+	 * boolean value of *false* we will return the 404 exception instead.
+	 * 
 	 * $exitOnComplete - When set to true (the default) we will exit the current
 	 * PHP process after sending the response. This ensures that no other output
 	 * can mess things up. However some setups may require the opposite.
@@ -95,6 +98,16 @@ class Router
 		}
 		catch (NotFoundHttpException $e)
 		{
+			/*
+			 * If the 404 is explicitly set the boolean value of false.
+			 * We re-throw the exception and make that the responsibility
+			 * of the caller.
+			 */
+			if ($notFound === false) throw $e;
+
+			// Output the 404 header
+			header('HTTP/1.0 404 Not Found');
+
 			// Output our 404 page
 			if (!empty($notFound))
 			{
