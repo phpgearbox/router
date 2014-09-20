@@ -1,5 +1,10 @@
 The Router Gear
 ================================================================================
+[![Build Status](https://travis-ci.org/phpgearbox/router.svg)](https://travis-ci.org/phpgearbox/router)
+[![Latest Stable Version](https://poser.pugx.org/gears/router/v/stable.svg)](https://packagist.org/packages/gears/router)
+[![Total Downloads](https://poser.pugx.org/gears/router/downloads.svg)](https://packagist.org/packages/gears/router)
+[![License](https://poser.pugx.org/gears/router/license.svg)](https://packagist.org/packages/gears/router)
+
 **Laravel Router Standalone**
 
 Okay so by now hopefully you have heard of [Laravel](http://laravel.com/),
@@ -57,6 +62,12 @@ Route::get('/', function()
 });
 ```
 
+**Class Alias**
+Behind the scenes when you call ```Gears\Router::install()``` we automatically
+create a new class alias called ```Route```, this sets up the normal public API
+you are used to. However if the class ```Route``` is already in existence.
+We will alias ourselves to ```Gears\Route```.
+
 The 404 Error
 --------------------------------------------------------------------------------
 Out of the box we have built in a simple and clean looking 404 error page.
@@ -69,6 +80,17 @@ The instalation of the router might look like:
 Gears\Router::install('/file/path/to/my/routes', 'Custom 404 HTML');
 ```
 
+**The 404 Exception**
+If you set the 404 parameter to a boolean value of *false*.
+Then we will simply re-throw the 404 exception, which is an instance of:
+
+```
+Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+```
+
+You can then deal with this yourself. An example use case might be to have
+multiple routers. Which then could provide HMVC type setup.
+
 Exit On Complete
 --------------------------------------------------------------------------------
 For most setups you will probably want the execution of PHP to stop after the
@@ -79,11 +101,6 @@ The instalation of the router might look like:
 ```php
 Gears\Router::install('/file/path/to/my/routes', 'Custom 404 HTML', false);
 ```
-
-More info
---------------------------------------------------------------------------------
-For more configuration options see the class comments at:
-https://github.com/phpgearbox/router/blob/master/Router.php
 
 So now for the why?
 --------------------------------------------------------------------------------

@@ -1,19 +1,25 @@
 {
 	"name": "gears/router",
 	"description": "Laravel Router Standalone",
-	"homepage": "https://github.com/phpgearbox/blade",
+	"homepage": "https://github.com/phpgearbox/router",
 	"keywords": ["laravel", "router", "standalone"],
 	"license": "MIT",
-	"require":
-	{
-		"illuminate/routing": "*",
-		"illuminate/events": "*"
-	},
 	"autoload":
 	{
 		"psr-4":
 		{
-			"Gears\\": ""
+			"Gears\\": "src"
 		}
+	},
+	"require":
+	{
+		"illuminate/routing": "4.*",
+		"illuminate/events": "4.*"
+	},
+	"require-dev":
+	{
+		"phpunit/phpunit": "4.*",
+		"codegyre/robo": "*",
+		"guzzlehttp/guzzle": "4.*"
 	}
 }
