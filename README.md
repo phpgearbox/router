@@ -27,10 +27,12 @@ You can use the Laravel Router API like so:
 require('vendor/autoload.php');
 
 // Install the gears router component
-Gears\Router::install('/file/path/to/my/routes');
+$router = new Gears\Router();
+$router->routesPath = '/file/path/to/my/routes';
+$router->dispatch();
 
-// At this point execution will not continue. The router will either return
-// the output from a route and exit or it will output a 404 and then exit.
+// At this point execution will not continue. The router will either output
+// the results from a route and exit or it will output a 404 and then exit.
 ```
 
 The ```/file/path/to/my/routes``` can either be a routes php file.
@@ -63,10 +65,10 @@ Route::get('/', function()
 ```
 
 **Class Alias**
-Behind the scenes when you call ```Gears\Router::install()``` we automatically
-create a new class alias called ```Route```, this sets up the normal public API
-you are used to. However if the class ```Route``` is already in existence.
-We will alias ourselves to ```Gears\Route```.
+Behind the scenes when you call ```dispatch()``` we automatically create a new
+class alias called ```Route```, this sets up the normal public API you are used
+to. However if the class ```Route``` is already in existence.
+We also alias ourselves to ```Gears\Route```.
 
 The 404 Error
 --------------------------------------------------------------------------------
@@ -77,7 +79,10 @@ However if you wish to overide the 404 content the router returns.
 The instalation of the router might look like:
 
 ```php
-Gears\Router::install('/file/path/to/my/routes', 'Custom 404 HTML');
+$router = new Gears\Router();
+$router->routesPath = '/file/path/to/my/routes';
+$router->notFound = 'Custom 404 HTML';
+$router->dispatch();
 ```
 
 **The 404 Exception**
@@ -89,7 +94,7 @@ Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 ```
 
 You can then deal with this yourself. An example use case might be to have
-multiple routers. Which then could provide HMVC type setup.
+multiple routers. Which then could provide a HMVC type setup.
 
 Exit On Complete
 --------------------------------------------------------------------------------
@@ -99,7 +104,10 @@ reason you don't want this, perhaps some sort of output buffering or something.
 The instalation of the router might look like:
 
 ```php
-Gears\Router::install('/file/path/to/my/routes', 'Custom 404 HTML', false);
+$router = new Gears\Router();
+$router->routesPath = '/file/path/to/my/routes';
+$router->exitOnComplete = false;
+$router->dispatch();
 ```
 
 So now for the why?

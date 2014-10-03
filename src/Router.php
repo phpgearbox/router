@@ -11,70 +11,153 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
+use RuntimeException;
+use Gears\Di\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router as LaravelRouter;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Router
+class Router extends Container
 {
+	/**
+	 * Property: routesPath
+	 * =========================================================================
+	 * This is the file path to where our route file or files are stored.
+	 */
+	protected $injectRoutesPath;
+
+	/**
+	 * Property: notFound
+	 * =========================================================================
+	 * If this is set we will use this as the 404 response.
+	 * If nothing is supplied we output a nice looking default 404 page.
+	 * Credits: http://html5boilerplate.com/
+	 */
+	protected $injectNotFound;
+
+	/**
+	 * Property: exitOnComplete
+	 * =========================================================================
+	 * When set to true (the default) we will exit the current PHP process after
+	 * sending the response. This ensures that no other output can mess things
+	 * up. However some setups may require the opposite.
+	 */
+	protected $injectExitOnComplete;
+
+	/**
+	 * Property: dispatcher
+	 * =========================================================================
+	 * An instance of ```Illuminate\Events\Dispatcher```.
+	 */
+	protected $injectDispatcher;
+
+	/**
+	 * Property: finder
+	 * =========================================================================
+	 * An instance of ```Symfony\Component\Finder\Finder```.
+	 */
+	protected $injectFinder;
+
+	/**
+	 * Property: request
+	 * =========================================================================
+	 * An instance of ```Illuminate\Http\Request```.
+	 */
+	protected $injectRequest;
+
+	/**
+	 * Property: laravelRouter
+	 * =========================================================================
+	 * An instance of ```Illuminate\Routing\Router```.
+	 */
+	protected $injectLaravelRouter;
+
 	/**
 	 * Property: router
 	 * =========================================================================
-	 * This is where we store a copy of the actual LaravelRouter.
+	 * This is where we statically store a copy of the LaravelRouter
+	 * after the container has been installed.
 	 */
 	private static $router;
 
 	/**
+	 * Method: setDefaults
+	 * =========================================================================
+	 * This is where we set all our defaults. If you need to customise this
+	 * container this is a good place to look to see what can be configured
+	 * and how to configure it.
+	 * 
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 * n/a
+	 * 
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * void
+	 */
+	protected function setDefaults()
+	{
+		$this->exitOnComplete = true;
+
+		$this->dispatcher = function()
+		{
+			return new Dispatcher;
+		};
+
+		$this->finder = $this->factory(function()
+		{
+			return new Finder;
+		});
+
+		$this->request = function()
+		{
+			return Request::createFromGlobals();
+		};
+
+		$this->laravelRouter = function()
+		{
+			return new LaravelRouter($this->dispatcher);
+		};
+	}
+
+	/**
 	 * Method: install
 	 * =========================================================================
-	 * To setup the router simply call this method, with a path to a single file
-	 * or a directory containing route files. ie: One route per file.
-	 *
-	 * Example usage:
-	 *
-	 *     Gears\Router::install('/path/to/my/routes');
+	 * Once the router has been configured, simply run this method and we will
+	 * resolve the router from the container. Setup some class alias's,
+	 * add the routes and finally dispatch the underlying router.
 	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
-	 * $path - A file path to a route file or directory.
-	 *
-	 * $notFound - If this is set we will use this as the 404 response.
-	 * If nothing is supplied we output a nice looking default 404 page.
-	 * Credits: http://html5boilerplate.com/
-	 * 
-	 * **NEW FEATURE:** If the value for notFound is explicitly set to a
-	 * boolean value of *false* we will return the 404 exception instead.
-	 * 
-	 * $exitOnComplete - When set to true (the default) we will exit the current
-	 * PHP process after sending the response. This ensures that no other output
-	 * can mess things up. However some setups may require the opposite.
+	 * n/a
 	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * void
 	 */
-	public static function install($path, $notFound = null, $exitOnComplete = true)
+	public function install()
 	{
-		// Create the new laravel router
-		self::$router = new LaravelRouter(new Dispatcher);
+		// Resolve the router from the container
+		self::$router = $this->laravelRouter;
 
 		// Alias ourselves
 		if (!class_exists('\Route'))
 		{
 			class_alias('\Gears\Router', '\Route');
 		}
-		else
+
+		if (!class_exists('\Gears\Route'))
 		{
 			class_alias('\Gears\Router', '\Gears\Route');
 		}
 
 		// Check if the path is a file or dir
-		if (is_dir($path))
+		if (is_dir($this->routesPath))
 		{
 			// Loop through all our route files.
-			foreach (with(new Finder())->files()->in($path) as $file)
+			foreach ($this->finder->files()->in($this->routesPath) as $file)
 			{
 				// Load the file
 				require($file->getRealpath());
@@ -83,13 +166,33 @@ class Router
 		else
 		{
 			// Load the single file
-			require($path);
+			require($this->routesPath);
 		}
+
+		/*
+		 * Now that we have looped through all our routes we can reset the
+		 * static router property. We do this so that further static calls
+		 * to this class will fail.
+		 * 
+		 * We want to avoid this situation:
+		 * 
+		 * ```php
+		 * $router1 = new Gears\Router();
+		 * $router1->install();
+		 * 
+		 * $router2 = new Gears\Router();
+		 * 
+		 * // this route would not be added to router2 but to router1
+		 * Route::get('/', function(){ return 'foo'; });
+		 * ```
+		 */
+		$router = self::$router;
+		self::$router = null;
 
 		try
 		{
 			// Run the router
-			$response = self::$router->dispatch(Request::createFromGlobals());
+			$response = $router->dispatch($this->request);
 
 			// Send the response
 			$response->send();
@@ -97,19 +200,19 @@ class Router
 		catch (NotFoundHttpException $e)
 		{
 			/*
-			 * If the 404 is explicitly set the boolean value of false.
+			 * If the 404 is explicitly set to the boolean value of false.
 			 * We re-throw the exception and make that the responsibility
 			 * of the caller.
 			 */
-			if ($notFound === false) throw $e;
+			if ($this->notFound === false) throw $e;
 
 			// Output the 404 header
 			header('HTTP/1.0 404 Not Found');
 
 			// Output our 404 page
-			if (!empty($notFound))
+			if (!empty($this->notFound))
 			{
-				echo $notFound;
+				echo $this->notFound;
 			}
 			else
 			{
@@ -145,7 +248,26 @@ class Router
 		}
 
 		// We are all done now
-		if ($exitOnComplete) exit;
+		if ($this->exitOnComplete) exit;
+	}
+
+	/**
+	 * Method: dispatch
+	 * =========================================================================
+	 * This is just an alias of install as it makes slightly more sense to
+	 * dispatch the router than to install it.
+	 *
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 * n/a
+	 *
+	 * Returns:
+	 * -------------------------------------------------------------------------
+	 * void
+	 */
+	public function dispatch()
+	{
+		$this->install();
 	}
 
 	/**
@@ -160,15 +282,24 @@ class Router
 	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
-	 * $name - The name of the method to call.
-	 * $args - The argumnent array that is given to us.
+	 * - $name: The name of the method to call.
+	 * - $args: The argumnent array that is given to us.
 	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
 	 * mixed
+	 * 
+	 * Throws:
+	 * -------------------------------------------------------------------------
+	 * - RuntimeException: When the router has not been installed.
 	 */
 	public static function __callStatic($name, $args)
 	{
+		if (empty(self::$router))
+		{
+			throw new RuntimeException('You need to install a router first!');
+		}
+
 		return call_user_func_array([self::$router, $name], $args);
 	}
 }

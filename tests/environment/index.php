@@ -15,4 +15,6 @@
 require('../../vendor/autoload.php');
 
 // Install the router
-Gears\Router::install('./routes');
+$router = new Gears\Router();
+$router->routesPath = './routes';
+$router->install();
