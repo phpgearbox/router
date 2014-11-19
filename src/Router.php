@@ -210,7 +210,7 @@ class Router extends Container
 			header('HTTP/1.0 404 Not Found');
 
 			// Output our 404 page
-			if (!empty($this->notFound))
+			if (!is_null($this->notFound))
 			{
 				echo $this->notFound;
 			}
