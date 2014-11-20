@@ -269,7 +269,7 @@ class Router extends Container
 	 */
 	public function dispatch()
 	{
-		$this->install();
+		return $this->install();
 	}
 
 	/**
