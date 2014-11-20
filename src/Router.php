@@ -135,7 +135,7 @@ class Router extends Container
 	 *
 	 * Returns:
 	 * -------------------------------------------------------------------------
-	 * void
+	 * If not set to exit we will return ```Illuminate\Http\Response```
 	 */
 	public function install()
 	{
@@ -193,9 +193,6 @@ class Router extends Container
 		{
 			// Run the router
 			$response = $router->dispatch($this->request);
-
-			// Send the response
-			$response->send();
 		}
 		catch (NotFoundHttpException $e)
 		{
@@ -247,8 +244,13 @@ class Router extends Container
 			}
 		}
 
-		// We are all done now
-		if ($this->exitOnComplete) exit;
+		// Send the response
+		if ($this->exitOnComplete)
+		{
+			$response->send(); exit;
+		}
+
+		return $response;
 	}
 
 	/**
