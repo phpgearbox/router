@@ -273,7 +273,7 @@ class Router extends Container
 	}
 
 	/**
-	 * Method: __callStatic
+	 * Method: __call
 	 * =========================================================================
 	 * Okay so this is the magic method that makes it possible to do this:
 	 *
@@ -281,6 +281,10 @@ class Router extends Container
 	 *
 	 * For more info on how the laravel route api works, please see:
 	 * http://laravel.com/docs/routing
+	 * 
+	 * > NOTE: Due to an odd PHP behaviour we are overriding the DI Containers
+	 * > __call method and no longer use the __callStatic method. See this
+	 * > stackoverflow link: http://stackoverflow.com/q/13232445
 	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
@@ -295,7 +299,7 @@ class Router extends Container
 	 * -------------------------------------------------------------------------
 	 * - RuntimeException: When the router has not been installed.
 	 */
-	public static function __callStatic($name, $args)
+	public function __call($name, $args)
 	{
 		if (empty(self::$router))
 		{
