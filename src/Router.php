@@ -242,6 +242,9 @@ class Router extends Container
 					<!-- IE needs 512+ bytes: http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx -->
 				';
 			}
+
+			// If we output a 404 we will exit regardless of exitOnComplete
+			exit;
 		}
 
 		// Send the response
