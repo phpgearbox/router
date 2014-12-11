@@ -157,7 +157,7 @@ class Router extends Container
 		if (is_dir($this->routesPath))
 		{
 			// Loop through all our route files.
-			foreach ($this->finder->files()->in($this->routesPath) as $file)
+			foreach ($this->finder->files()->in($this->routesPath)->sortByName() as $file)
 			{
 				// Load the file
 				require($file->getRealpath());
