@@ -11,12 +11,6 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
- * Include our local composer autoloader just in case
- * we are called with a globally installed version of robo.
- */
-require_once(__DIR__.'/vendor/autoload.php');
-
 class RoboFile extends Robo\Tasks
 {
 	/**
@@ -51,9 +45,6 @@ class RoboFile extends Robo\Tasks
 			->background(true)
 		->run();
 
-		$this->taskPHPUnit()
-			->bootstrap('./tests/bootstrap.php')
-			->arg('./tests')
-		->run();
+		exit($this->taskPHPUnit()->bootstrap('./tests/bootstrap.php')->arg('./tests')->run()->getExitCode());
 	}
 }
