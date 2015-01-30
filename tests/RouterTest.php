@@ -13,66 +13,19 @@
 
 class RouterTest extends PHPUnit_Framework_TestCase
 {
-	/**
-	 * Property: $http
-	 * =========================================================================
-	 * We store an instance of GuzzleHttp\Client here.
-	 */
 	protected $http;
-
-	/**
-	 * Method: setUp
-	 * =========================================================================
-	 * This is run before our tests. It creates the above properties.
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 * n/a
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * void
-	 */
+	
 	protected function setUp()
 	{
 		// Get a new guzzle client
 		$this->http = GuzzleTester();
 	}
-
-	/**
-	 * Method: testDefaultRoute
-	 * =========================================================================
-	 * Tests to make sure we get the hello world response.
-	 * The counter part route script is:
-	 * 
-	 *     ./tests/environment/routes/index.GET.php
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 * n/a
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * void
-	 */
+	
 	public function testDefaultRoute()
 	{
 		$this->assertEquals('Hello World', $this->http->get()->getBody());
 	}
-
-	/**
-	 * Method: test404Response
-	 * =========================================================================
-	 * This makes sure we get a 404 response back for an invalid route.
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 * n/a
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * void
-	 */
+	
 	public function test404Response()
 	{
 		try
@@ -86,46 +39,13 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
 		$this->fail('404 Exception Not Thrown');
 	}
-
-	/**
-	 * Method: testRoutesWithSameNameButDifferentVerbs
-	 * =========================================================================
-	 * We can have routes of the same name but with different HTTP verbs.
-	 * The counter part route script is:
-	 * 
-	 *     ./tests/environment/routes/foobar.GET.php
-	 *     ./tests/environment/routes/foobar.POST.php
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 * n/a
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * void
-	 */
+	
 	public function testRoutesWithSameNameButDifferentVerbs()
 	{
 		$this->assertEquals('FOOBAR GET', $this->http->get('/foobar')->getBody());
 		$this->assertEquals('FOOBAR POST', $this->http->post('/foobar')->getBody());
 	}
-
-	/**
-	 * Method: testUriVars
-	 * =========================================================================
-	 * Test variables in the URI segments.
-	 * The counter part route script is:
-	 * 
-	 *     ./tests/environment/routes/uri-vars-{name}-{age}.GET.php
-	 *
-	 * Parameters:
-	 * -------------------------------------------------------------------------
-	 * n/a
-	 *
-	 * Returns:
-	 * -------------------------------------------------------------------------
-	 * void
-	 */
+	
 	public function testUriVars()
 	{
 		$name = 'Brad Jones';
@@ -136,5 +56,10 @@ class RouterTest extends PHPUnit_Framework_TestCase
 			'Hello '.$name.' of '.$age.' years old.',
 			$this->http->get('/uri/vars/'.$name.'/'.$age)->getBody()
 		);
+	}
+	
+	public function testContainerCalls()
+	{
+		$this->assertEquals('bar', $this->http->get('/container-calls?foo=bar')->getBody());
 	}
 }

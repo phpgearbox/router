@@ -304,11 +304,18 @@ class Router extends Container
 	 */
 	public function __call($name, $args)
 	{
-		if (empty(self::$router))
+		if ($this->offsetExists($name))
 		{
-			throw new RuntimeException('You need to install a router first!');
+			return parent::__call($name, $args);
 		}
+		else
+		{
+			if (empty(self::$router))
+			{
+				throw new RuntimeException('You need to install a router first!');
+			}
 
-		return call_user_func_array([self::$router, $name], $args);
+			return call_user_func_array([self::$router, $name], $args);
+		}
 	}
 }
