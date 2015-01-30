@@ -62,4 +62,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals('bar', $this->http->get('/container-calls?foo=bar')->getBody());
 	}
+	
+	public function testRequestInterface()
+	{
+		$this->assertEquals('bar', $this->http->get('/request-interface?foo=bar')->getBody());
+	}
 }

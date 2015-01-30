@@ -14,7 +14,7 @@
 use RuntimeException;
 use Gears\Di\Container;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Http\Request;
+use Gears\Router\Request;
 use Illuminate\Routing\Router as LaravelRouter;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -151,6 +151,11 @@ class Router extends Container
 		if (!class_exists('\Gears\Route'))
 		{
 			class_alias('\Gears\Router', '\Gears\Route');
+		}
+		
+		if (!class_exists('\Request'))
+		{
+			class_alias('\Gears\Router\Request', '\Request');
 		}
 
 		// Check if the path is a file or dir
