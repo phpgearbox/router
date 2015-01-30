@@ -157,6 +157,11 @@ class Router extends Container
 		{
 			class_alias('\Gears\Router\Request', '\Request');
 		}
+		
+		if (!class_exists('\Input'))
+		{
+			class_alias('\Gears\Router\Input', '\Input');
+		}
 
 		// Check if the path is a file or dir
 		if (is_dir($this->routesPath))
