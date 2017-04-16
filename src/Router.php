@@ -286,6 +286,20 @@ class Router extends Container
 	}
 
 	/**
+	 * Method: request
+	 * =========================================================================
+	 * Parameters:
+	 * -------------------------------------------------------------------------
+	 * Returns: Request instance
+	 * -------------------------------------------------------------------------
+	 * void
+	 */
+	public function request()
+	{
+		return $this->request;
+	}
+	
+	/**
 	 * Method: __call
 	 * =========================================================================
 	 * Okay so this is the magic method that makes it possible to do this:
